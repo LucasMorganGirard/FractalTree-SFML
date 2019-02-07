@@ -73,7 +73,7 @@ sf::VertexArray fillLignes(sf::Vector2f startingPoint, const float longeur, floa
     //APPELLE DE LA RECURSIVE QUI CALCULES LES BRANCHES (TROIS POINT(x,y) PARENT, FILLE GAUCHE, FILLE DROITE)
     //REMPLIS tabBranche
     //-M_PI/2 CORRESPOND A L'ORIENTATION DE LA STRUCTURE ICI VERS LE HAUT
-    theTree(tabBranche, startingPoint, longeur, -M_PI/2, alpha, beta, pixelStop, option);
+    theTree(tabBranche, startingPoint, longeur, -M_PI, alpha, beta, pixelStop, option);
     //VECTOR DE LIGNES (SET(x,y) DE POINTs DEUX PAR DEUX), DE TAILLE 4*tabBranche
     //CAR UNE BRANCHE = 2 LIGNES (PERE - FILLE GAUCHE) (PERE - FILLE DROITE) = 4 SET DE POINT
     sf::VertexArray ligne(sf::Lines, 4*tabBranche.size());
@@ -92,12 +92,13 @@ sf::VertexArray fillLignes(sf::Vector2f startingPoint, const float longeur, floa
 int main(int, char const**)
 {
     // Create the main window
-    sf::RenderWindow window(sf::VideoMode(1800, 1800), "SFML window", sf::Style::None);
+    sf::RenderWindow window(sf::VideoMode(2500, 1800), "SFML window", sf::Style::None);
     
     //VARIABLES
-    sf::Vector2f startingPoint(600.0,600.0);//POINT DE DEPART DE LA RECURSIVE
-    const float longueur = 200;  //LONGUEUR DE LA PREMIERE BRANCHE EN PX LES BRANCHE
+    sf::Vector2f startingPoint(1800.0,900.0);//POINT DE DEPART DE LA RECURSIVE
+    const float longueur = 300;  //LONGUEUR DE LA PREMIERE BRANCHE EN PX LES BRANCHE
     //SONT DE LONGUEUR longueur/1.6 PAR RAPPORT A LA BRANCHE PRECEDENTE
+    std::string str;
     float alpha = M_PI/4;       //ANGLE ECART ENTRE BRANCHE PERE ET BRANCHE FILLE
     //(POUR QUE LES DEUX BRANCHES SOIT A EQUIDISTANSE DE LA BRANCHE PERE alpha = PI/4)
     float beta = M_PI/4;        //ANGLE ECART ENTRE LES DEUX BRANCHE
@@ -105,10 +106,10 @@ int main(int, char const**)
     bool autoEcart=false;       //L'ECART ENTRE LES DEUX BRANCHE AUGMENTE A CHAQUE FRAME TOUT SEUL
     float augMovAuto = 0.01;    //SI autoMov = true alpha+=augMovAuto
     float augEcartAuto = 0.01;  //SI autoEcart = true beta+=augEcartAuto
-    bool followMouse=false;     //ACTIVE LE SUIVIT DE LA SOURIS
+    bool followMouse=true;     //ACTIVE LE SUIVIT DE LA SOURIS
     int pixelStop = 2;          //LONGUEUR MINIMAL D'UNE BRANCHE A PARTIR DE LAQUEL LE PROGRAMME
     //NE CHERCHE PLUS LES BRANCHE RECURSIVEMENT(CONDITION D'ARRET) EN PIXEL
-    sf::Vertex startLigne[2] = {sf::Vertex(sf::Vector2f(startingPoint.x,startingPoint.y)),sf::Vertex(sf::Vector2f(startingPoint.x,startingPoint.y+longueur))};
+    sf::Vertex startLigne[2] = {sf::Vertex(sf::Vector2f(startingPoint.x,startingPoint.y)),sf::Vertex(sf::Vector2f(startingPoint.x+longueur,startingPoint.y))};
     //LIGNE DECORATIVE DE DEPART ^
     int option = 1;             //OPTION A APPLIQUER A LA BOUCLE RECURSIVE POUR DIFFERENTS EFFETS
     //LIGNE STOQUE LES LIGNE (1 LIGNE = DEUX SET(x,y) DE POINT SUCCESSIF (DEUX PAR DEUX PAS PLUS))
@@ -128,7 +129,7 @@ int main(int, char const**)
     text.setFillColor(sf::Color::White);
     
     sf::Texture img;
-    if(!img.loadFromFile(resourcePath() + "fond.png")){
+    if(!img.loadFromFile(resourcePath() + "fond.jpg")){
         return EXIT_FAILURE;
     }
     sf::Sprite fond(img);
@@ -207,13 +208,19 @@ int main(int, char const**)
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::G) {
                 //REDEFINITION DE LA LONGUEURE REQUISE POUR CONTINUER LA RECURSIVITE
                 //JOLIE EFFET DE RECONSTRUCTION GRACE AU SI(>2):pixelStop++ DANS LE DRAW
-                pixelStop=100;
+                pixelStop=200;
             }
             
         }
         
+        str = std::to_string(option);
         //AFFICHE ALPHA ET BETA SUR L'ECRAN
-        text.setString(std::to_string(alpha) + " : " + std::to_string(beta));
+        if(option==1){
+            str = str+" ( normal ) 'E' pour passer en proportiennel";
+        }else if(option == 2){
+            str = str+" ( proportionnel ) 'D' pour passer en normal";
+        }
+        text.setString(" esc pour quitter, Alpha : " + std::to_string(fmod(alpha,2*M_PI)) + " Beta : " + std::to_string(fmod(beta,2*M_PI))+"\n" + " option " + str);
         // Clear screen
         window.clear();
         

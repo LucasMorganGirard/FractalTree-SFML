@@ -10,7 +10,7 @@
 		E1180FEE220A8CC100D66B2A /* ResourcePath.mm in Sources */ = {isa = PBXBuildFile; fileRef = E1180FED220A8CC100D66B2A /* ResourcePath.mm */; };
 		E1180FF1220A8CC100D66B2A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1180FF0220A8CC100D66B2A /* main.cpp */; };
 		E1180FF8220A8CC100D66B2A /* sansation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E1180FF7220A8CC100D66B2A /* sansation.ttf */; };
-		E1181002220A8DB100D66B2A /* fond.png in Resources */ = {isa = PBXBuildFile; fileRef = E1181001220A8DB100D66B2A /* fond.png */; };
+		E1E68044220BC6FF003D82EE /* fond.jpg in Resources */ = {isa = PBXBuildFile; fileRef = E1E68043220BC6FF003D82EE /* fond.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,7 +20,7 @@
 		E1180FEF220A8CC100D66B2A /* ResourcePath.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ResourcePath.hpp; sourceTree = "<group>"; };
 		E1180FF0220A8CC100D66B2A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		E1180FF7220A8CC100D66B2A /* sansation.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = sansation.ttf; sourceTree = "<group>"; };
-		E1181001220A8DB100D66B2A /* fond.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = fond.png; path = "../../../3projet/main.cpp/recursifTree-info.plist/fond.png"; sourceTree = "<group>"; };
+		E1E68043220BC6FF003D82EE /* fond.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = fond.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,7 +74,7 @@
 			isa = PBXGroup;
 			children = (
 				E1180FF7220A8CC100D66B2A /* sansation.ttf */,
-				E1181001220A8DB100D66B2A /* fond.png */,
+				E1E68043220BC6FF003D82EE /* fond.jpg */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -136,7 +136,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1181002220A8DB100D66B2A /* fond.png in Resources */,
+				E1E68044220BC6FF003D82EE /* fond.jpg in Resources */,
 				E1180FF8220A8CC100D66B2A /* sansation.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
