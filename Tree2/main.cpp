@@ -9,7 +9,7 @@
 #include <iostream>
 #include <math.h>
 
-// Here is a small helper for you! Have a look.
+//Fournis par le framwork SFML
 #include "ResourcePath.hpp"
 
 //STOQUAGE DE TROIS SET(x,y) DE POINT POUR CREE UNE BRANCHE=(LIGNE) ENTRE : PERE - FILLE GAUCHE, PERE - FILLE DROITE
@@ -91,7 +91,7 @@ sf::VertexArray fillLignes(sf::Vector2f startingPoint, const float longeur, floa
 
 int main(int, char const**)
 {
-    // Create the main window
+    //STYLE NONE PAS DE BORDURE PAS DE RESIZE PAS DE CLOSE
     sf::RenderWindow window(sf::VideoMode(2500, 1800), "SFML window", sf::Style::None);
     
     //VARIABLES
@@ -135,19 +135,18 @@ int main(int, char const**)
     sf::Sprite fond(img);
     
     window.setFramerateLimit(60);
-    // Start the game loop
     while (window.isOpen())
     {
-        // Process events
+  
         sf::Event event;
         while (window.pollEvent(event))
         {
-            // Close window: exit
+            //FERMETURE DE LA FENETRE SI REQUETE DE FERMETURE
             if (event.type == sf::Event::Closed) {
                 window.close();
             }
             
-            // Escape pressed: exit
+            //IDEM
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
                 window.close();
             }
@@ -221,7 +220,7 @@ int main(int, char const**)
             str = str+" ( proportionnel ) 'D' pour passer en normal";
         }
         text.setString(" esc pour quitter, Alpha : " + std::to_string(fmod(alpha,2*M_PI)) + " Beta : " + std::to_string(fmod(beta,2*M_PI))+"\n" + " option " + str);
-        // Clear screen
+        
         window.clear();
         
         
