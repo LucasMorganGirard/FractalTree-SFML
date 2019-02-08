@@ -26,8 +26,9 @@ int main(int, char const**)
     
     std::string str;
     
-    float alpha = M_PI/4;       //ANGLE ECART ENTRE BRANCHE PERE ET BRANCHE FILLE
-    //(POUR QUE LES DEUX BRANCHES SOIT A EQUIDISTANSE DE LA BRANCHE PERE alpha = PI/4)
+    bool alphaOn = false;
+
+    float alpha = 0;       //ANGLE ECART ENTRE BRANCHE PERE ET BRANCHE FILLE
     
     float ecart = M_PI/4;        //ANGLE ECART ENTRE LES DEUX BRANCHE
     
@@ -79,7 +80,7 @@ int main(int, char const**)
     //-------------------
     sf::VertexArray treeLignes;
 
-    Branche* start = new Branche(startingPoint, startingAngle, ecart, longueur, tree);
+    Branche* start = new Branche(startingPoint, startingAngle, ecart, longueur, alpha, tree);
     
     int current;
     
@@ -109,6 +110,7 @@ int main(int, char const**)
                 autoMov=!autoMov;
                 augMovAuto = 0.01;
                 followMouse=false;
+                alphaOn=autoMov;
             }
             
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down) {
@@ -118,6 +120,7 @@ int main(int, char const**)
                 autoMov=!autoMov;
                 augMovAuto = -0.01;
                 followMouse=false;
+                alphaOn=autoMov;
             }
             
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right) {
@@ -142,11 +145,11 @@ int main(int, char const**)
                 autoEcart=false;
             }
             
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::D) {//NORMAL
-                option=1;
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::D) {//
+                alphaOn=!alphaOn;
             }
             
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::E) {//PROPORTIONELLE
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::E) {//
                 option=2;
             }
             
@@ -177,11 +180,11 @@ int main(int, char const**)
         str = std::to_string(option);
         //AFFICHE ALPHA ET BETA SUR L'ECRAN
         if(option==1){
-            str = str+" ( normal ) 'E' pour passer en proportiennel";
+            str = str+" ";
         }else if(option == 2){
-            str = str+" ( proportionnel ) 'D' pour passer en normal";
+            str = str+" ";
         }
-        text.setString(" esc pour quitter, Alpha : " + std::to_string(fmod(alpha,2*M_PI)) + " Beta : " + std::to_string(fmod(ecart,2*M_PI))+"\n" + " option " + str);
+        text.setString(" esc pour quitter, Alpha (non implementer) : " + std::to_string(fmod(alpha,2*M_PI)) + " ecart : " + std::to_string(fmod(ecart,2*M_PI))+"\n" + " option " + str);
         
         window.clear();
         
@@ -189,9 +192,21 @@ int main(int, char const**)
         if(autoMov){//AUGMENTATION DE ALPHA AUTO
             alpha+=augMovAuto;
         }
+        
+        if(!alphaOn){
+            if (alpha>0.01){
+                alpha-=0.002;
+            }else if (alpha<-0.01){
+                alpha+=0.002;
+            }else{
+                alpha=0;
+            }
+        }
+            
         if(autoEcart){//AUGMENTATION DE BETA AUTO
             ecart+=augEcartAuto;
         }
+        
         if(followMouse){
             //ALPHA(X) ET BETA(Y) EVOLUE EN FONCTION DE LA SOURIS
             sf::Vector2i localPosition = sf::Mouse::getPosition(window);
@@ -219,7 +234,7 @@ int main(int, char const**)
 
         tree.clear();
         delete start;
-        start = new Branche(startingPoint, startingAngle, ecart, longueur/1.6, tree);
+        start = new Branche(startingPoint, startingAngle, ecart, longueur/1.6, alpha, tree);
         (*start).createTree();
         
         if(generationAffichage == 0){

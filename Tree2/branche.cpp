@@ -11,8 +11,8 @@
 #include <math.h>
 #include <cmath>
 
-Branche::Branche(const sf::Vector2f startingPoint, const float startingAngle,const float& ecart,const float longeur, std::vector<Branche>& tree)
-:mStartingPoint(startingPoint),mStartingAngle(startingAngle),mEcart(ecart),mLongueur(longeur),mTree(tree){};
+Branche::Branche(const sf::Vector2f startingPoint, const float startingAngle,const float& ecart,const float longeur, const float& alpha , std::vector<Branche>& tree)
+:mStartingPoint(startingPoint),mStartingAngle(startingAngle),mEcart(ecart),mLongueur(longeur), mAlpha(alpha),mTree(tree){};
 
  const sf::Vector2f Branche::pointGauche(const float pourcentage) const{
     return sf::Vector2f(mStartingPoint.x + cos(mStartingAngle + mEcart) * (mLongueur * (pourcentage/100)), mStartingPoint.y + sin(mStartingAngle + mEcart) * (mLongueur * (pourcentage/100)));
@@ -37,8 +37,8 @@ const float Branche::getLongueur() const{
 void Branche::createTree(){
     mTree.push_back(*this);
     if(int(mLongueur/1.6) > 2){
-        Branche Gauche((*this).pointGauche(100.f), mStartingAngle + mEcart, mEcart, mLongueur/1.6, mTree);
-        Branche Droite((*this).pointDroit(100.f), mStartingAngle - mEcart, mEcart, mLongueur/1.6, mTree);
+        Branche Gauche((*this).pointGauche(100.f), mStartingAngle + mEcart + mAlpha, mEcart, mLongueur/1.6, mAlpha, mTree);
+        Branche Droite((*this).pointDroit(100.f), mStartingAngle - mEcart + mAlpha, mEcart, mLongueur/1.6, mAlpha, mTree);
         Gauche.createTree();
         Droite.createTree();
     }

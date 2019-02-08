@@ -14,7 +14,7 @@
 
 class Branche{
 public:
-    Branche(const sf::Vector2f, const float, const float&, const float, std::vector<Branche>&);
+    Branche(const sf::Vector2f, const float, const float&, const float, const float&, std::vector<Branche>&);
     
      const sf::Vector2f pointGauche(const float) const;
      const sf::Vector2f pointDroit(const float) const;
@@ -30,6 +30,7 @@ private:
     const float& mEcart;
     const float mLongueur;
     const float mStartingAngle;
+    const float& mAlpha;
 };
 
 #endif /* branche_hpp */
