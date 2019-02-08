@@ -14,14 +14,15 @@
 
 class Branche{
 public:
-    Branche(const sf::Vector2f, const float, const float&, const float, const float&, std::vector<Branche>&);
+    Branche(const sf::Vector2f, const float, const float&, const float, const float&, std::vector<Branche>&, const unsigned);
     
-     const sf::Vector2f pointGauche(const float) const;
-     const sf::Vector2f pointDroit(const float) const;
+     const sf::Vector2f pointGauche(const float, const bool) const;
+     const sf::Vector2f pointDroit(const float, const bool) const;
      const sf::Vector2f getStartingPoint() const;
-     const int getGeneration(const float) const;
+     const int getGeneration() const;
      const float getLongueur() const;
-     void createTree();
+     void createTree(const bool);
+     const int rando() const;
     
 private:
     //Attributs
@@ -31,6 +32,7 @@ private:
     const float mLongueur;
     const float mStartingAngle;
     const float& mAlpha;
+    const unsigned mNbParents;
 };
 
 #endif /* branche_hpp */

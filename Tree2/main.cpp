@@ -21,7 +21,7 @@ int main(int, char const**)
     //VARIABLES
     sf::Vector2f startingPoint(1800.0,900.0);//POINT DE DEPART DE LA RECURSIVE
     
-    float longueur = 500;  //LONGUEUR DE LA PREMIERE BRANCHE EN PX LES BRANCHE
+    float longueur = 300;  //LONGUEUR DE LA PREMIERE BRANCHE EN PX LES BRANCHE
     //SONT DE LONGUEUR longueur/1.6 PAR RAPPORT A LA BRANCHE PRECEDENTE
     
     std::string str;
@@ -30,7 +30,7 @@ int main(int, char const**)
 
     float alpha = 0;       //ANGLE ECART ENTRE BRANCHE PERE ET BRANCHE FILLE
     
-    float ecart = M_PI/4;        //ANGLE ECART ENTRE LES DEUX BRANCHE
+    float ecart = M_PI/8;        //ANGLE ECART ENTRE LES DEUX BRANCHE
     
     const float startingAngle = M_PI;
     
@@ -46,13 +46,19 @@ int main(int, char const**)
     
     bool followMouse=false;     //ACTIVE LE SUIVIT DE LA SOURIS
     
+    bool classic = false;
+    
     int generationAffichage;
     
     bool grow = true;
 
-    grow ? generationAffichage = 0 : generationAffichage = 13;
+    grow ? generationAffichage = 0 : generationAffichage = 25;
     
     std::vector<Branche> tree;
+    
+    sf::Vector2i origine(0,0);
+    sf::CircleShape originePoint(20.f);
+
     
     //LIGNE DECORATIVE DE DEPART
     sf::Vertex startLigne[2];
@@ -76,15 +82,17 @@ int main(int, char const**)
     }
     sf::Sprite fond(img);
     
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(30);
     //-------------------
     sf::VertexArray treeLignes;
 
-    Branche* start = new Branche(startingPoint, startingAngle, ecart, longueur, alpha, tree);
+    Branche* start = new Branche(startingPoint, startingAngle, ecart, longueur, alpha, tree, 0);
     
     int current;
     
     float pourcentAffichage = 1;
+    
+    bool firstIteration=true;
     
     while (window.isOpen())
     {
@@ -143,6 +151,10 @@ int main(int, char const**)
                 followMouse=!followMouse;
                 autoMov=false;
                 autoEcart=false;
+                if(followMouse){
+                    origine = sf::Mouse::getPosition(window);
+                    originePoint.setPosition(origine.x-20, origine.y-20);
+                }
             }
             
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::D) {//
@@ -160,7 +172,7 @@ int main(int, char const**)
                     generationAffichage = 0;
                     pourcentAffichage=1;
                 }else{
-                    generationAffichage = 13;
+                    generationAffichage = 25;
                 }
             }
             
@@ -171,7 +183,7 @@ int main(int, char const**)
                     generationAffichage = 0;
                     pourcentAffichage=1;
                 }else{
-                    generationAffichage = 13;
+                    generationAffichage = 25;
                 }
             }
             
@@ -193,6 +205,7 @@ int main(int, char const**)
             alpha+=augMovAuto;
         }
         
+        
         if(!alphaOn){
             if (alpha>0.01){
                 alpha-=0.002;
@@ -210,15 +223,18 @@ int main(int, char const**)
         if(followMouse){
             //ALPHA(X) ET BETA(Y) EVOLUE EN FONCTION DE LA SOURIS
             sf::Vector2i localPosition = sf::Mouse::getPosition(window);
-            alpha = 0.001*localPosition.y;
-            ecart = 0.001*localPosition.x;
+            alpha += 0.1*(origine.y - localPosition.y)/1800;
+            ecart += 0.1*(origine.x - localPosition.x)/2500;
         }
         
+        fmod(alpha, 2*M_PI);
+        fmod(ecart, 2*M_PI);
+
         if(grow || weirdGrow){
             if(pourcentAffichage < 100){
                 pourcentAffichage+=2;
             }else if (pourcentAffichage >= 100){
-                if(generationAffichage < 13){
+                if(generationAffichage < 25){
                     generationAffichage++;
                     pourcentAffichage=2;
                 }else{
@@ -234,8 +250,8 @@ int main(int, char const**)
 
         tree.clear();
         delete start;
-        start = new Branche(startingPoint, startingAngle, ecart, longueur/1.6, alpha, tree);
-        (*start).createTree();
+        start = new Branche(startingPoint, startingAngle, ecart, longueur/1.6, alpha, tree, 1);
+        (*start).createTree(classic);
         
         if(generationAffichage == 0){
             startLigne[0] = sf::Vertex(sf::Vector2f(startingPoint.x + longueur,startingPoint.y));
@@ -250,21 +266,21 @@ int main(int, char const**)
         for (Branche b : tree) {
             if(weirdGrow){
                 treeLignes[current++].position = b.getStartingPoint();
-                treeLignes[current++].position = b.pointGauche(pourcentAffichage);
+                treeLignes[current++].position = b.pointGauche(pourcentAffichage, classic);
                 treeLignes[current++].position = b.getStartingPoint();
-                treeLignes[current++].position = b.pointDroit(pourcentAffichage);
-                generationAffichage = 13;
+                treeLignes[current++].position = b.pointDroit(pourcentAffichage, classic);
+                generationAffichage = 25;
             }else{
-                if (b.getGeneration(longueur/1.6) < generationAffichage) {
+                if (b.getGeneration() < generationAffichage) {
                     treeLignes[current++].position = b.getStartingPoint();
-                    treeLignes[current++].position = b.pointGauche(100.f);
+                    treeLignes[current++].position = b.pointGauche(100.f, classic);
                     treeLignes[current++].position = b.getStartingPoint();
-                    treeLignes[current++].position = b.pointDroit(100.f);
-                }else if (b.getGeneration(longueur/1.6) == generationAffichage){
+                    treeLignes[current++].position = b.pointDroit(100.f, classic);
+                }else if (b.getGeneration() == generationAffichage){
                     treeLignes[current++].position = b.getStartingPoint();
-                    treeLignes[current++].position = b.pointGauche(pourcentAffichage);
+                    treeLignes[current++].position = b.pointGauche(pourcentAffichage, classic);
                     treeLignes[current++].position = b.getStartingPoint();
-                    treeLignes[current++].position = b.pointDroit(pourcentAffichage);
+                    treeLignes[current++].position = b.pointDroit(pourcentAffichage, classic);
                 }
             }
         }
@@ -273,7 +289,11 @@ int main(int, char const**)
         window.draw(treeLignes);
         window.draw(startLigne, 2, sf::Lines);
         window.draw(text);
+        if(followMouse){
+            window.draw(originePoint);
+        }
         window.display();
+        firstIteration=false;
     }
     
     return EXIT_SUCCESS;
