@@ -1,93 +1,17 @@
 /**
- Fractral arbre 6 fevrier 2019
- LUCAS GIRARD : Universite de Sciences et Techniques de Nantes L2 informatique
- FRAMEWORK SFML pour c++
+     Fractral arbre 6 fevrier 2019
+     LUCAS GIRARD : Universite de Sciences et Techniques de Nantes L2 informatique
+     FRAMEWORK SFML pour c++
  */
 
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <iostream>
 #include <math.h>
+#include "branche.hpp"
 
 //Fournis par le framwork SFML
 #include "ResourcePath.hpp"
-
-//STOQUAGE DE TROIS SET(x,y) DE POINT POUR CREE UNE BRANCHE=(LIGNE) ENTRE : PERE - FILLE GAUCHE, PERE - FILLE DROITE
-//DANS LE RESTE DU PROGRAMME
-struct branche3 {
-    branche3(sf::Vector2f par, sf::Vector2f filleG, sf::Vector2f filleD):
-    parent(par),filleGauche(filleG),filleDroite(filleD){}
-    
-    sf::Vector2f parent;
-    sf::Vector2f filleGauche;
-    sf::Vector2f filleDroite;
-};
-
-typedef std::vector<branche3> dynamicTab;
-
-void const afficheBranche(branche3 b){//AFFICHAGE D'UNE BRANCHE const CAR PAS DE MODIF DE DONNE
-    std::cout << "x parent : " << b.parent.x << std::endl;
-    std::cout << "y parent : " << b.parent.y << std::endl;
-    std::cout << "x droite : " << b.filleDroite.x << std::endl;
-    std::cout << "y droite : " << b.filleDroite.y << std::endl;
-    std::cout << "x gauche : " << b.filleGauche.x << std::endl;
-    std::cout << "y gauche : " << b.filleGauche.y << std::endl;
-    std::cout << "AAA" << std::endl;
-}
-
-void theTree(dynamicTab & v, const sf::Vector2f start, const float lon, const float startingAngle, float alpha, float ecart, int pixelStop, const int option){
-    
-    //SI LA LONGUEUR DE LA BRANCHE A CALCULER (lon) EST PLUS ELEVER QUE pixelStop
-    if(lon > pixelStop){
-        
-        //SET DES ANGLES FILLE DROITE ET GAUCHE AUTOUR DU STARTING POINT (±ecart)
-        float angleFilleG = startingAngle + ecart;
-        float angleFilleD = startingAngle - ecart;
-        
-        //ON OBTIENS LES COORDONNES DES POINTS FILLE GAUCHE ET DROITE GRACE AU COSE ET AU SIN DES ANGLES CALCULER PRECEDEMENT
-        sf::Vector2f filleG(start.x + cos(angleFilleG) * lon, start.y + sin(angleFilleG) * lon);
-        sf::Vector2f filleD(start.x + cos(angleFilleD) * lon, start.y + sin(angleFilleD) * lon);
-        //ON CREE LA BRANCHE CORRESPONDANT AVEC LE PERE ET LES FILLES
-        branche3 * b = new branche3(start,filleG,filleD);
-        //ON AJOUTE LA BRANCHE AU VECTOR DE BRANCHE
-        v.push_back(*b);//A GARDER COMME CA MOINS DE FUITE MEMOIRE QUE v.push_back(*new branche3(start,filleG,filleD); QUAND DELETE MANUELLEMENT
-        delete b;//ON LIBERE LA MEMOIRE
-        if(option == 1){//arbre libre
-            //RECURSION ON MODIFIE LE STARTING POINT POUR AVOIR UN PETIT ECART AVEC PAR RAPPORT A LA BRANCHE PRECEDENTE
-            theTree(v,filleG, lon/1.6, startingAngle+alpha, alpha, ecart, pixelStop, option);
-            theTree(v,filleD, lon/1.6, startingAngle-alpha, alpha, ecart, pixelStop, option);
-        }else if(option == 2){//arbre proportionnelle (plus parfait)
-            theTree(v,filleG, lon/1.6, startingAngle+ecart, alpha, ecart, pixelStop, option);
-            theTree(v,filleD, lon/1.6, startingAngle-ecart, alpha, ecart, pixelStop, option);
-        }else if(option == 3){
-            
-        }else{//par default
-            theTree(v,filleG, lon/1.6, startingAngle+ecart, alpha, ecart, pixelStop, option);
-            theTree(v,filleD, lon/1.6, startingAngle-ecart, alpha, ecart, pixelStop, option);
-        }
-    }
-}
-
-sf::VertexArray fillLignes(sf::Vector2f startingPoint, const float longeur, float alpha, float beta, int pixelStop, int option){
-    dynamicTab tabBranche;//UTILISATION DU TYPE EXPLICITE PLUS HAUT (vector<branche3>)
-    //APPELLE DE LA RECURSIVE QUI CALCULES LES BRANCHES (TROIS POINT(x,y) PARENT, FILLE GAUCHE, FILLE DROITE)
-    //REMPLIS tabBranche
-    //-M_PI/2 CORRESPOND A L'ORIENTATION DE LA STRUCTURE ICI VERS LE HAUT
-    theTree(tabBranche, startingPoint, longeur, -M_PI, alpha, beta, pixelStop, option);
-    //VECTOR DE LIGNES (SET(x,y) DE POINTs DEUX PAR DEUX), DE TAILLE 4*tabBranche
-    //CAR UNE BRANCHE = 2 LIGNES (PERE - FILLE GAUCHE) (PERE - FILLE DROITE) = 4 SET DE POINT
-    sf::VertexArray ligne(sf::Lines, 4*tabBranche.size());
-    //CURRENT VAS AUGMENTER 4 FOIS A CHAQUE TOUR POUR SUIVRE LE CONTENU DE line DE TAILLE 4*tabBranche
-    int current=0;
-    for(int i = 0 ; i < tabBranche.size(); i++){
-        //ON ENREGISTRE LES LIGNES (SET(x,y) DE POINTS) COMME EXPLIQUER PLUS HAUT
-        ligne[current++].position = tabBranche[i].parent;
-        ligne[current++].position = tabBranche[i].filleGauche;
-        ligne[current++].position = tabBranche[i].parent;
-        ligne[current++].position = tabBranche[i].filleDroite;
-    }
-    return ligne;
-}
 
 int main(int, char const**)
 {
@@ -96,28 +20,45 @@ int main(int, char const**)
     
     //VARIABLES
     sf::Vector2f startingPoint(1800.0,900.0);//POINT DE DEPART DE LA RECURSIVE
-    const float longueur = 300;  //LONGUEUR DE LA PREMIERE BRANCHE EN PX LES BRANCHE
+    
+    float longueur = 500;  //LONGUEUR DE LA PREMIERE BRANCHE EN PX LES BRANCHE
     //SONT DE LONGUEUR longueur/1.6 PAR RAPPORT A LA BRANCHE PRECEDENTE
+    
     std::string str;
+    
     float alpha = M_PI/4;       //ANGLE ECART ENTRE BRANCHE PERE ET BRANCHE FILLE
     //(POUR QUE LES DEUX BRANCHES SOIT A EQUIDISTANSE DE LA BRANCHE PERE alpha = PI/4)
-    float beta = M_PI/4;        //ANGLE ECART ENTRE LES DEUX BRANCHE
+    
+    float ecart = M_PI/4;        //ANGLE ECART ENTRE LES DEUX BRANCHE
+    
+    const float startingAngle = M_PI;
+    
     bool autoMov=false;         //L'ECART ENTRE LES BRANCHE ET LA BRANCHE PERE AUGMENTE A CHAQUE FRAME TOUT SEUL
+    
     bool autoEcart=false;       //L'ECART ENTRE LES DEUX BRANCHE AUGMENTE A CHAQUE FRAME TOUT SEUL
+    
+    bool weirdGrow=false;
+    
     float augMovAuto = 0.01;    //SI autoMov = true alpha+=augMovAuto
+    
     float augEcartAuto = 0.01;  //SI autoEcart = true beta+=augEcartAuto
-    bool followMouse=true;     //ACTIVE LE SUIVIT DE LA SOURIS
-    int pixelStop = 2;          //LONGUEUR MINIMAL D'UNE BRANCHE A PARTIR DE LAQUEL LE PROGRAMME
-    //NE CHERCHE PLUS LES BRANCHE RECURSIVEMENT(CONDITION D'ARRET) EN PIXEL
-    sf::Vertex startLigne[2] = {sf::Vertex(sf::Vector2f(startingPoint.x,startingPoint.y)),sf::Vertex(sf::Vector2f(startingPoint.x+longueur,startingPoint.y))};
-    //LIGNE DECORATIVE DE DEPART ^
-    int option = 1;             //OPTION A APPLIQUER A LA BOUCLE RECURSIVE POUR DIFFERENTS EFFETS
-    //LIGNE STOQUE LES LIGNE (1 LIGNE = DEUX SET(x,y) DE POINT SUCCESSIF (DEUX PAR DEUX PAS PLUS))
-    //ON REMPLIS ligne GRACE A LA FONCTION PRINCIPALE
-    sf::VertexArray ligne = *new sf::VertexArray(fillLignes(startingPoint, longueur, alpha, beta, pixelStop, 1));
     
+    bool followMouse=false;     //ACTIVE LE SUIVIT DE LA SOURIS
     
-    //CREATION DU TEST POUR AFFICHER ALPHA ET BETA DANS LA FENETRE
+    int generationAffichage;
+    
+    bool grow = true;
+
+    grow ? generationAffichage = 0 : generationAffichage = 13;
+    
+    std::vector<Branche> tree;
+    
+    //LIGNE DECORATIVE DE DEPART
+    sf::Vertex startLigne[2];
+    
+    int option = 1;
+
+    //-------------------
     sf::Font font;
     if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
         return EXIT_FAILURE;
@@ -135,6 +76,15 @@ int main(int, char const**)
     sf::Sprite fond(img);
     
     window.setFramerateLimit(60);
+    //-------------------
+    sf::VertexArray treeLignes;
+
+    Branche* start = new Branche(startingPoint, startingAngle, ecart, longueur, tree);
+    
+    int current;
+    
+    float pourcentAffichage = 1;
+    
     while (window.isOpen())
     {
   
@@ -201,13 +151,25 @@ int main(int, char const**)
             }
             
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {//NULL
-                option=3;
+                grow = !grow;
+                weirdGrow=false;
+                if (grow) {
+                    generationAffichage = 0;
+                    pourcentAffichage=1;
+                }else{
+                    generationAffichage = 13;
+                }
             }
             
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::G) {
-                //REDEFINITION DE LA LONGUEURE REQUISE POUR CONTINUER LA RECURSIVITE
-                //JOLIE EFFET DE RECONSTRUCTION GRACE AU SI(>2):pixelStop++ DANS LE DRAW
-                pixelStop=200;
+                weirdGrow=!weirdGrow;
+                grow=false;
+                if (weirdGrow) {
+                    generationAffichage = 0;
+                    pourcentAffichage=1;
+                }else{
+                    generationAffichage = 13;
+                }
             }
             
         }
@@ -219,7 +181,7 @@ int main(int, char const**)
         }else if(option == 2){
             str = str+" ( proportionnel ) 'D' pour passer en normal";
         }
-        text.setString(" esc pour quitter, Alpha : " + std::to_string(fmod(alpha,2*M_PI)) + " Beta : " + std::to_string(fmod(beta,2*M_PI))+"\n" + " option " + str);
+        text.setString(" esc pour quitter, Alpha : " + std::to_string(fmod(alpha,2*M_PI)) + " Beta : " + std::to_string(fmod(ecart,2*M_PI))+"\n" + " option " + str);
         
         window.clear();
         
@@ -228,35 +190,74 @@ int main(int, char const**)
             alpha+=augMovAuto;
         }
         if(autoEcart){//AUGMENTATION DE BETA AUTO
-            beta+=augEcartAuto;
+            ecart+=augEcartAuto;
         }
         if(followMouse){
             //ALPHA(X) ET BETA(Y) EVOLUE EN FONCTION DE LA SOURIS
             sf::Vector2i localPosition = sf::Mouse::getPosition(window);
             alpha = 0.001*localPosition.y;
-            beta = 0.001*localPosition.x;
-        }
-        for(int i =0; i<ligne.getVertexCount(); i++){
-            //DESTRUCTION DES LIGNES AVANT DE LES RECALCULER AVEC LES EVENTUELLES NOUVEAU PARAMETRES
-            //EVITE LES FUITES MEMOIRE !IMPORTANT!
-            ligne[i].~Vertex();
+            ecart = 0.001*localPosition.x;
         }
         
-        if(pixelStop>2){
-            //LE NOMBRE DE PIXEL NECESSAIRE A FAIRE CALCULER UNE BRANCHE DIMINUE : LES BRANCHE REAPPARAISSE AU FUR ET A MESURE
-            //A COMBINER AVEC -G
-            pixelStop-=1;
+        if(grow || weirdGrow){
+            if(pourcentAffichage < 100){
+                pourcentAffichage+=2;
+            }else if (pourcentAffichage >= 100){
+                if(generationAffichage < 13){
+                    generationAffichage++;
+                    pourcentAffichage=2;
+                }else{
+                    grow=false;
+                    weirdGrow=false;
+                }
+            }
+        }else{
+            pourcentAffichage=100;
         }
         
-        ligne.clear();
-        //CREATION DES LIGNES AVEC LES PARAMETRE MIS A JOURS
-        ligne = fillLignes(startingPoint, longueur, alpha, beta, pixelStop, option);
-        //DRAW LA PREMIERE LIGNES
+        //CREATION ET DRAW DES LIGNES AVEC LES PARAMETRE MIS A JOURS
+
+        tree.clear();
+        delete start;
+        start = new Branche(startingPoint, startingAngle, ecart, longueur/1.6, tree);
+        (*start).createTree();
+        
+        if(generationAffichage == 0){
+            startLigne[0] = sf::Vertex(sf::Vector2f(startingPoint.x + longueur,startingPoint.y));
+            startLigne[1] = sf::Vertex(sf::Vector2f(startingPoint.x + longueur - longueur*(pourcentAffichage/100), startingPoint.y));
+        }else{
+            startLigne[0] = sf::Vertex(sf::Vector2f(startingPoint.x,startingPoint.y));
+            startLigne[1] = sf::Vertex(sf::Vector2f(startingPoint.x+longueur,startingPoint.y));
+        }
+        
+        treeLignes = sf::VertexArray(sf::VertexArray(sf::Lines, 4*tree.size()));
+        current=0;
+        for (Branche b : tree) {
+            if(weirdGrow){
+                treeLignes[current++].position = b.getStartingPoint();
+                treeLignes[current++].position = b.pointGauche(pourcentAffichage);
+                treeLignes[current++].position = b.getStartingPoint();
+                treeLignes[current++].position = b.pointDroit(pourcentAffichage);
+                generationAffichage = 13;
+            }else{
+                if (b.getGeneration(longueur/1.6) < generationAffichage) {
+                    treeLignes[current++].position = b.getStartingPoint();
+                    treeLignes[current++].position = b.pointGauche(100.f);
+                    treeLignes[current++].position = b.getStartingPoint();
+                    treeLignes[current++].position = b.pointDroit(100.f);
+                }else if (b.getGeneration(longueur/1.6) == generationAffichage){
+                    treeLignes[current++].position = b.getStartingPoint();
+                    treeLignes[current++].position = b.pointGauche(pourcentAffichage);
+                    treeLignes[current++].position = b.getStartingPoint();
+                    treeLignes[current++].position = b.pointDroit(pourcentAffichage);
+                }
+            }
+        }
+        
         window.draw(fond);
+        window.draw(treeLignes);
         window.draw(startLigne, 2, sf::Lines);
         window.draw(text);
-        //DRAW LES LIGNE
-        window.draw(ligne);
         window.display();
     }
     
