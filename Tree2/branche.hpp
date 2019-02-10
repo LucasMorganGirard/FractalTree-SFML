@@ -22,11 +22,13 @@ public:
      const int getGeneration() const;
      const float getLongueur() const;
      void createTree(const bool);
-     const int rando() const;
+     const int rando(const int) const;
     
 private:
     //Attributs
     std::vector<Branche>& mTree;
+    bool mGActive;
+    bool mDActive;
     const sf::Vector2f mStartingPoint;
     const float& mEcart;
     const float mLongueur;

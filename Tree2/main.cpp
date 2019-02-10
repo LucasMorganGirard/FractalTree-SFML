@@ -36,7 +36,7 @@ int main(int, char const**)
     
     int generationAffichage;
     
-    bool grow = true;
+    bool grow = false;
 
     grow ? generationAffichage = 0 : generationAffichage = 16;
     
@@ -131,7 +131,6 @@ int main(int, char const**)
         
         if(firstIteration || grow || followMouse || generationAffichage < 16){
             std::cout << firstIteration << " " << grow << " " << followMouse << " " << (generationAffichage < 16) << std::endl;
-            window.clear();
             
             if(followMouse){
                 //ALPHA(X) ET BETA(Y) EVOLUE EN FONCTION DE LA SOURIS
@@ -190,17 +189,19 @@ int main(int, char const**)
                     }
             }
             
-            if(followMouse){
-                window.draw(originePoint);
-            }
             firstIteration=false;
             
         }
+        
         tree.clear();
+        window.clear();
         window.draw(fond);
         window.draw(treeLignes);
         window.draw(startLigne, 2, sf::Lines);
         window.draw(text);
+        if(followMouse){
+            window.draw(originePoint);
+        }
         window.display();
         
     }
