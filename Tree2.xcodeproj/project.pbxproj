@@ -19,7 +19,7 @@
 		E1180FEC220A8CC100D66B2A /* Tree2-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Tree2-Info.plist"; sourceTree = "<group>"; };
 		E1180FED220A8CC100D66B2A /* ResourcePath.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourcePath.mm; sourceTree = "<group>"; };
 		E1180FEF220A8CC100D66B2A /* ResourcePath.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ResourcePath.hpp; sourceTree = "<group>"; };
-		E1180FF0220A8CC100D66B2A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		E1180FF0220A8CC100D66B2A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 1; };
 		E1180FF7220A8CC100D66B2A /* sansation.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = sansation.ttf; sourceTree = "<group>"; };
 		E189FB2D220C7FF5001B9C7D /* branche.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = branche.cpp; path = Tree2/branche.cpp; sourceTree = "<group>"; };
 		E189FB2F220C7FFE001B9C7D /* branche.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = branche.hpp; path = Tree2/branche.hpp; sourceTree = "<group>"; };

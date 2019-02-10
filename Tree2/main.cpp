@@ -1,7 +1,7 @@
 /**
-     Fractral arbre 6 fevrier 2019
-     LUCAS GIRARD : Universite de Sciences et Techniques de Nantes L2 informatique
-     FRAMEWORK SFML pour c++
+ Fractral arbre 6 fevrier 2019
+ LUCAS GIRARD : Universite de Sciences et Techniques de Nantes L2 informatique
+ FRAMEWORK SFML pour c++
  */
 
 #include <SFML/Graphics.hpp>
@@ -37,14 +37,14 @@ int main(int, char const**)
     int generationAffichage;
     
     bool grow = false;
-
+    
     grow ? generationAffichage = 0 : generationAffichage = 16;
     
     std::vector<Branche> tree;
     
     sf::Vector2i origine(0,0);
     sf::CircleShape originePoint(20.f);
-
+    
     //LIGNE DECORATIVE DE DEPART
     sf::Vertex startLigne[2];
     
@@ -68,7 +68,7 @@ int main(int, char const**)
     window.setFramerateLimit(30);
     //-------------------
     sf::VertexArray treeLignes;
-
+    
     Branche* start = new Branche(startingPoint, startingAngle, ecart, longueur, alpha, tree, 0);
     
     int current;
@@ -79,7 +79,7 @@ int main(int, char const**)
     
     while (window.isOpen())
     {
-  
+        
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -122,7 +122,7 @@ int main(int, char const**)
             }
             
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::G) {
-
+                
             }
             
         }
@@ -141,7 +141,7 @@ int main(int, char const**)
             
             alpha=fmod(alpha, 2*M_PI);
             ecart=fmod(ecart, 2*M_PI);
-
+            
             if(grow){
                 if(pourcentAffichage < 100){
                     pourcentAffichage+=2;
@@ -159,7 +159,7 @@ int main(int, char const**)
             }
             
             //CREATION ET DRAW DES LIGNES AVEC LES PARAMETRE MIS A JOURS
-
+            
             tree.clear();
             delete start;
             start = new Branche(startingPoint, startingAngle, ecart, longueur/1.6, alpha, tree, 1);
@@ -176,17 +176,39 @@ int main(int, char const**)
             treeLignes = sf::VertexArray(sf::VertexArray(sf::Lines, 4*tree.size()));
             current=0;
             for (Branche b : tree) {
-                    if (b.getGeneration() < generationAffichage) {
+                if (b.getGeneration() < generationAffichage) {
+                    if(b.getGeneration() > 10){
+                        treeLignes[current].color = sf::Color::Red;
+                        treeLignes[current++].position = b.getStartingPoint();
+                        treeLignes[current].color = sf::Color::Red;
+                        treeLignes[current++].position = b.pointGauche(100.f, classic);
+                        treeLignes[current].color = sf::Color::Red;
+                        treeLignes[current++].position = b.getStartingPoint();
+                        treeLignes[current].color = sf::Color::Red;
+                        treeLignes[current++].position = b.pointDroit(100.f, classic);
+                    }else{
                         treeLignes[current++].position = b.getStartingPoint();
                         treeLignes[current++].position = b.pointGauche(100.f, classic);
                         treeLignes[current++].position = b.getStartingPoint();
                         treeLignes[current++].position = b.pointDroit(100.f, classic);
-                    }else if (b.getGeneration() == generationAffichage){
+                    }
+                }else if (b.getGeneration() == generationAffichage){
+                    if(b.getGeneration() > 10){
+                        treeLignes[current].color = sf::Color::Red;
+                        treeLignes[current++].position = b.getStartingPoint();
+                        treeLignes[current].color = sf::Color::Red;
+                        treeLignes[current++].position = b.pointGauche(pourcentAffichage, classic);
+                        treeLignes[current].color = sf::Color::Red;
+                        treeLignes[current++].position = b.getStartingPoint();
+                        treeLignes[current].color = sf::Color::Red;
+                        treeLignes[current++].position = b.pointDroit(pourcentAffichage, classic);
+                    }else{
                         treeLignes[current++].position = b.getStartingPoint();
                         treeLignes[current++].position = b.pointGauche(pourcentAffichage, classic);
                         treeLignes[current++].position = b.getStartingPoint();
                         treeLignes[current++].position = b.pointDroit(pourcentAffichage, classic);
                     }
+                }
             }
             
             firstIteration=false;
